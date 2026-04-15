@@ -1,0 +1,142 @@
+trigger:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    exclude:
+      - '**/*.md'
+
+variables:
+  - group: exp-config
+  - group: exp-secrets
+
+stages:
+
+  # ── Stage 1: Compile + validate ──────────────────────────────
+  - stage: Build
+    displayName: 'Compile and validate'
+    jobs:
+      - job: Compile
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - task: JavaToolInstaller@0
+            displayName: 'Install JDK 17'
+            inputs:
+              versionSpec: '17'
+              jdkArchitectureOption: x64
+              jdkSourceOption: PreInstalled
+
+          - task: Cache@2
+            displayName: 'Restore Maven dependency cache'
+            inputs:
+              key: 'maven | $(Agent.OS) | pom.xml'
+              path: $(HOME)/.m2/repository
+              restoreKeys: |
+                maven | $(Agent.OS)
+                maven
+
+          - script: mvn -B process-test-resources -q --no-transfer-progress
+            displayName: 'Validate Gherkin feature files'
+
+          - script: mvn -B compile test-compile -q --no-transfer-progress
+            displayName: 'Compile source and tests'
+
+  # ── Stage 2: Full API regression (parallel) ──────────────────
+  # Parallelism is provided by:
+  #   • cucumber-jvm parallel execution (junit-platform.properties)
+  #   • maven-failsafe parallel=methods + useUnlimitedThreads (pom.xml)
+  #   • failsafe forkCount below for JVM-level parallelism
+  - stage: FullRegression
+    displayName: 'Full API Regression'
+    dependsOn: Build
+    condition: succeeded()
+    jobs:
+      - job: ApiTests
+        displayName: 'Serenity API tests (parallel)'
+        pool: { vmImage: ubuntu-latest }
+        timeoutInMinutes: 60
+        steps:
+          - task: JavaToolInstaller@0
+            inputs: { versionSpec: '17', jdkArchitectureOption: x64, jdkSourceOption: PreInstalled }
+
+          - task: Cache@2
+            inputs:
+              key: 'maven | $(Agent.OS) | pom.xml'
+              path: $(HOME)/.m2/repository
+
+          - task: Bash@3
+            displayName: 'Run Serenity API tests'
+            inputs:
+              targetType: inline
+              script: |
+                mvn -B verify --no-transfer-progress \
+                  -Dfailsafe.forkCount=2C \
+                  -Dfailsafe.reuseForks=true
+
+          - task: PublishTestResults@2
+            condition: always()
+            displayName: 'Publish JUnit results'
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: '**/failsafe-reports/TEST-*.xml'
+              mergeTestResults: true
+              testRunTitle: 'CI API | $(Build.SourceBranchName) | $(Build.BuildNumber)'
+
+          - task: PublishPipelineArtifact@1
+            condition: always()
+            displayName: 'Upload Serenity report artifact'
+            inputs:
+              targetPath: target/site/serenity
+              artifact: serenity-report-api
+              publishLocation: pipeline
+
+  # ── Stage 3: Publish report to Blob Storage ──────────────────
+  - stage: PublishReports
+    displayName: 'Publish Reports'
+    dependsOn: FullRegression
+    condition: always()
+    jobs:
+      - job: Publish
+        pool: { vmImage: ubuntu-latest }
+        steps:
+
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Serenity API report'
+            inputs:
+              artifact: serenity-report-api
+              path: $(Pipeline.Workspace)/serenity-api
+
+          - task: Bash@3
+            displayName: 'Verify report directory'
+            inputs:
+              targetType: inline
+              script: |
+                echo "=== Serenity API report ==="
+                ls $(Pipeline.Workspace)/serenity-api || echo "API report missing"
+
+          - task: AzureCLI@2
+            displayName: 'Upload Serenity report to Blob Storage'
+            inputs:
+              azureSubscription: azure-exp-connection
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                set -e
+                BASE="reports/$(Build.SourceBranchName)/build-$(Build.BuildId)"
+
+                az storage blob upload-batch \
+                  --account-name $(STORAGE_ACCOUNT) \
+                  --destination "\$web/${BASE}/api" \
+                  --source "$(Pipeline.Workspace)/serenity-api" \
+                  --overwrite true
+
+                az storage blob upload-batch \
+                  --account-name $(STORAGE_ACCOUNT) \
+                  --destination "\$web/reports/$(Build.SourceBranchName)/latest/api" \
+                  --source "$(Pipeline.Workspace)/serenity-api" \
+                  --overwrite true
+
+                URL="https://$(STORAGE_ACCOUNT).z6.web.core.windows.net/${BASE}/api/index.html"
+                echo "##vso[task.logissue type=warning]API Report: ${URL}"
+                echo "API report published at: ${URL}"

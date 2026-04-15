@@ -1,0 +1,92 @@
+trigger: none   # Pipeline runs on PR only, not on direct push
+
+pr:
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    exclude:
+      - '**/*.md'
+      - 'docs/**'
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  - group: exp-config
+
+stages:
+
+  # ── Stage 1: Validate Gherkin and compile ────────────────────
+  - stage: Validate
+    displayName: 'Gherkin Validation + Compile'
+    jobs:
+      - job: ValidateAndCompile
+        displayName: 'Validate and compile'
+        steps:
+
+          - task: JavaToolInstaller@0
+            displayName: 'Install JDK 17'
+            inputs:
+              versionSpec: '17'
+              jdkArchitectureOption: x64
+              jdkSourceOption: PreInstalled
+
+          - task: Cache@2
+            displayName: 'Restore Maven dependency cache'
+            inputs:
+              key: 'maven | $(Agent.OS) | pom.xml'
+              path: $(HOME)/.m2/repository
+              restoreKeys: |
+                maven | $(Agent.OS)
+                maven
+
+          - script: mvn -B process-test-resources -q --no-transfer-progress
+            displayName: 'Validate Gherkin feature files'
+
+          - script: mvn -B compile test-compile -q --no-transfer-progress
+            displayName: 'Compile source and tests'
+
+  # ── Stage 2: Smoke API tests (parallel via Maven/Cucumber) ───
+  - stage: SmokeTest
+    displayName: 'Smoke API Tests'
+    dependsOn: Validate
+    condition: succeeded()
+    jobs:
+      - job: SmokeApi
+        displayName: 'Smoke API tests (parallel)'
+        timeoutInMinutes: 30
+        steps:
+
+          - task: JavaToolInstaller@0
+            inputs: { versionSpec: '17', jdkArchitectureOption: x64, jdkSourceOption: PreInstalled }
+
+          - task: Cache@2
+            inputs:
+              key: 'maven | $(Agent.OS) | pom.xml'
+              path: $(HOME)/.m2/repository
+
+          - script: |
+              mvn -B verify --no-transfer-progress \
+                -Dfailsafe.forkCount=2C \
+                -Dfailsafe.reuseForks=true \
+                -Dcucumber.filter.tags='@smoke'
+            displayName: 'Run @smoke tagged scenarios'
+
+          - task: PublishTestResults@2
+            displayName: 'Publish results to Azure Test Plans'
+            condition: always()
+            inputs:
+              testResultsFormat: JUnit
+              testResultsFiles: '**/failsafe-reports/TEST-*.xml'
+              mergeTestResults: true
+              failTaskOnFailedTests: true
+              testRunTitle: 'Smoke API | PR $(System.PullRequest.PullRequestNumber)'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Archive Serenity smoke report'
+            condition: always()
+            inputs:
+              targetPath: target/site/serenity
+              artifact: 'serenity-smoke-pr-$(Build.BuildNumber)'

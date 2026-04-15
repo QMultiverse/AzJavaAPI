@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><testsuite errors="2" failures="0" name="Buying and selling shares" skipped="0" tests="2" time="12.79" timestamp="2026-03-14 02:42:39"><testcase name="Buying and selling shares"><error message="parameterValue cannot be null" type="java.lang.IllegalArgumentException">parameterValue cannot be null</error><system-err>parameterValue cannot be null
+io.restassured.internal.common.assertion.AssertParameter.notNull(AssertParameter.groovy:26)
+io.restassured.internal.RequestSpecificationImpl.pathParam(RequestSpecificationImpl.groovy:515)
+net.serenitybdd.rest.decorators.request.RequestSpecificationParametersConfigurations.pathParam(RequestSpecificationParametersConfigurations.java:100)
+net.serenitybdd.rest.decorators.request.RequestSpecificationDecorated.pathParam(RequestSpecificationDecorated.java:38)
+net.bddtrader.acceptancetests.tasks.PlaceOrder.lambda$performAs$0(PlaceOrder.java:50)
+net.bddtrader.acceptancetests.tasks.PlaceOrder.performAs(PlaceOrder.java:43)
+net.bddtrader.acceptancetests.stepdefinitions.BuyingAndSellingSharesStepDefinitions.sells_shares(BuyingAndSellingSharesStepDefinitions.java:62)
+✽.he sells 3 AAPL shares for $150 each(classpath:features/portfolios/buying_and_selling_shares.feature:27)
+</system-err></testcase><testcase name="Buying shares"><error message="class java.util.LinkedHashMap cannot be cast to class java.util.List (java.util.LinkedHashMap and java.util.List are in module java.base of loader 'bootstrap')" type="java.lang.ClassCastException">class java.util.LinkedHashMap cannot be cast to class java.util.List (java.util.LinkedHashMap and java.util.List are in module java.base of loader 'bootstrap')</error><system-err>class java.util.LinkedHashMap cannot be cast to class java.util.List (java.util.LinkedHashMap and java.util.List are in module java.base of loader 'bootstrap')
+io.restassured.path.json.JsonPath.getList(JsonPath.java:391)
+net.bddtrader.acceptancetests.questions.ThePortfolio.lambda$positionsForClient$5(ThePortfolio.java:37)
+net.bddtrader.acceptancetests.stepdefinitions.BuyingAndSellingSharesStepDefinitions.should_have_the_following_positions(BuyingAndSellingSharesStepDefinitions.java:111)
+✽.he should have the following positions:(classpath:features/portfolios/buying_and_selling_shares.feature:19)
+</system-err></testcase></testsuite>

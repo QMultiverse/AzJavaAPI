@@ -1,0 +1,272 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------< serenity.api:serenity-api-tests >-------------------
+[INFO] Building Serenity API Acceptance Tests 1.0.0-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.2.0:clean (default-clean) @ serenity-api-tests ---
+[INFO] Deleting C:\Users\TechM\2026\JavaSerenityAPI\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ serenity-api-tests ---
+[INFO] skip non existing resourceDirectory C:\Users\TechM\2026\JavaSerenityAPI\src\main\resources
+[INFO] 
+[INFO] --- compiler:3.8.1:compile (default-compile) @ serenity-api-tests ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 4 source files to C:\Users\TechM\2026\JavaSerenityAPI\target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ serenity-api-tests ---
+[INFO] Copying 7 resources from src\test\resources to target\test-classes
+[INFO] 
+[INFO] --- compiler:3.8.1:testCompile (default-testCompile) @ serenity-api-tests ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 18 source files to C:\Users\TechM\2026\JavaSerenityAPI\target\test-classes
+[INFO] /C:/Users/TechM/2026/JavaSerenityAPI/src/test/java/api/acceptancetests/actors/CastOfApiUsers.java: C:\Users\TechM\2026\JavaSerenityAPI\src\test\java\api\acceptancetests\actors\CastOfApiUsers.java uses unchecked or unsafe operations.
+[INFO] /C:/Users/TechM/2026/JavaSerenityAPI/src/test/java/api/acceptancetests/actors/CastOfApiUsers.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- surefire:3.2.5:test (default-test) @ serenity-api-tests ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- jar:3.4.1:jar (default-jar) @ serenity-api-tests ---
+[INFO] Building jar: C:\Users\TechM\2026\JavaSerenityAPI\target\serenity-api-tests-1.0.0-SNAPSHOT.jar
+[INFO] 
+[INFO] --- failsafe:3.2.5:integration-test (default) @ serenity-api-tests ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running api.acceptancetests.CucumberTestSuite
+
+--------------------------------------------------
+  SCENARIO: Adding a new user
+--------------------------------------------------
+    When a user creates a new user with first name "Sarah" and last name "Smith"
+
+--------------------------------------------------
+  SCENARIO: Browsing products by category
+--------------------------------------------------
+    When a user browses products in the "smartphones" category
+
+--------------------------------------------------
+  SCENARIO: Logging in with valid credentials
+--------------------------------------------------
+    When a user logs in with username "emilys" and password "emilyspass"
+
+--------------------------------------------------
+  SCENARIO: Listing all products
+--------------------------------------------------
+    When a user requests the list of products
+
+--------------------------------------------------
+  SCENARIO: Listing users
+--------------------------------------------------
+    When a user requests the list of users
+
+--------------------------------------------------
+  SCENARIO: Searching for users
+--------------------------------------------------
+    When a user searches for users with the query "John"
+
+--------------------------------------------------
+  SCENARIO: Getting a single user by ID
+--------------------------------------------------
+    When a user requests the user with ID 1
+
+--------------------------------------------------
+  SCENARIO: Getting a single product by ID
+--------------------------------------------------
+    When a user requests the product with ID 1
+
+--------------------------------------------------
+  SCENARIO: Accessing authenticated user profile
+--------------------------------------------------
+    Given a user is logged in with username "emilys" and password "emilyspass"
+
+--------------------------------------------------
+  SCENARIO: Logging in with invalid credentials
+--------------------------------------------------
+    When a user logs in with username "emilys" and password "wrongpassword"
+
+--------------------------------------------------
+  SCENARIO: Searching for products
+--------------------------------------------------
+    When a user searches for products with the query "laptop"
+    Then the response should contain product details
+    Then the response should contain user details
+    Then the response should contain a list of users
+    Then the new user should be created successfully
+    Then the response should contain a list of products
+    Then the login should fail with status code 400
+    Then the login should be successful
+    Then the response should contain a list of products
+    Then the response should contain a list of products
+    Then the response should contain a list of users
+    And the response should contain first name "Sarah"
+    And the response should include an access token
+  RESULT: PASSED
+--------------------------------------------------
+    And all returned products should be related to "laptop"
+    And the product should have a title
+    And the total number of users should be greater than 0
+    And all returned products should be in the "smartphones" category
+    And the user's first name should be "Emily"
+    And the results should contain a user with last name "Johnson"
+    And the total number of products should be greater than 0
+    When the user requests their profile
+    And the response should include user details for "emilys"
+    And the response should contain last name "Smith"
+    And the product should have a price greater than 0
+    And the user's last name should be "Johnson"
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+  RESULT: PASSED
+--------------------------------------------------
+    Then the profile should contain the username "emilys"
+  RESULT: PASSED
+--------------------------------------------------
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 16.15 s -- in api.acceptancetests.CucumberTestSuite
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] 
+[INFO] --- serenity:4.1.20:aggregate (serenity-reports) @ serenity-api-tests ---
+[INFO] GENERATING REPORTS FOR: C:\Users\TechM\2026\JavaSerenityAPI
+[INFO] GENERATING REPORTS USING 24 THREADS
+[INFO] 
+----------------------------
+| TEST NAME:   Listing users
+| RESULT:      Passing
+| REQUIREMENT: Managing Users
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/43185959944c6c1e616f8337661c59b1288380cce1f03bec26099c294051565a.html
+----------------------------
+[INFO] 
+------------------------------------------
+| TEST NAME:   Getting a single user by ID
+| RESULT:      Passing
+| REQUIREMENT: Managing Users
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/7f6298973485ee2f93de929b672024b68300c921dc27d2e9460684508a510747.html
+------------------------------------------
+[INFO] 
+---------------------------------------------------
+| TEST NAME:   Accessing authenticated user profile
+| RESULT:      Passing
+| REQUIREMENT: User Authentication
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/0569ca467fa0ff6a81f54242b4afcb3cad1e8b93656670c25aea4a435eae3fc8.html
+---------------------------------------------------
+[INFO] 
+--------------------------------------------------
+| TEST NAME:   Logging in with invalid credentials
+| RESULT:      Passing
+| REQUIREMENT: User Authentication
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/fd5b32501ea7f5f930fd92a886e344236cf2e5d015ec8b0d13d70cd5f81e9a70.html
+--------------------------------------------------
+[INFO] 
+--------------------------------
+| TEST NAME:   Adding a new user
+| RESULT:      Passing
+| REQUIREMENT: Managing Users
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/c4fb2f9ef4741bfdd8a3c740595146cbc753c2f8a74d66118fb13e5132223745.html
+--------------------------------
+[INFO] 
+---------------------------------------------
+| TEST NAME:   Getting a single product by ID
+| RESULT:      Passing
+| REQUIREMENT: Browsing Products
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/b5f92b73385c4dd692f7ff2b5908ff0cf8f657583c8796d3f4b5c63de68eb2a3.html
+---------------------------------------------
+[INFO] 
+-------------------------------------
+| TEST NAME:   Searching for products
+| RESULT:      Passing
+| REQUIREMENT: Browsing Products
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/1a9746a0b3ab2be6be8dd22ccc04660e63012d9f6ef1a2a06e1787dd6b9e12db.html
+-------------------------------------
+[INFO] 
+-----------------------------------
+| TEST NAME:   Listing all products
+| RESULT:      Passing
+| REQUIREMENT: Browsing Products
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/ed242e1a57c7d6049725a062d03ad333a2360f4ccec358958c0dde3d7af335cf.html
+-----------------------------------
+[INFO] 
+--------------------------------------------
+| TEST NAME:   Browsing products by category
+| RESULT:      Passing
+| REQUIREMENT: Browsing Products
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/767f51dfbb34da1ab57ff5485fc0379f01c1c1860d4d531c45167bceda5b07f0.html
+--------------------------------------------
+[INFO] 
+----------------------------------
+| TEST NAME:   Searching for users
+| RESULT:      Passing
+| REQUIREMENT: Managing Users
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/469902ea82bd50ddf846c352f695d175a6f9b67602b8b246828ee5c807c8e6a6.html
+----------------------------------
+[INFO] 
+------------------------------------------------
+| TEST NAME:   Logging in with valid credentials
+| RESULT:      Passing
+| REQUIREMENT: User Authentication
+| REPORT:      file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/5592892b00b0f0e9fe502158eb6800f51cff064c75eb50acb7a4d1b2ea51eecb.html
+------------------------------------------------
+[INFO] GENERATING SUMMARY REPORTS...
+[INFO] GENERATING REQUIREMENTS REPORTS...
+[INFO] GENERATING RESULT REPORTS...
+[INFO] GENERATING ERROR REPORTS...
+[INFO] Test results for 11 tests generated in 29.5 secs in directory: file:/C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/
+[INFO] ------------------------------------------------
+[INFO] | SERENITY TESTS:               | SUCCESS
+[INFO] ------------------------------------------------
+[INFO] | Test scenarios executed       | 11
+[INFO] | Total Test cases executed     | 11
+[INFO] | Tests passed                  | 11
+[INFO] | Tests failed                  | 0
+[INFO] | Tests with errors             | 0
+[INFO] | Tests compromised             | 0
+[INFO] | Tests aborted                 | 0
+[INFO] | Tests pending                 | 0
+[INFO] | Tests ignored/skipped         | 0
+[INFO] ------------------------------- | --------------
+[INFO] | Total Duration| 1m 53s
+[INFO] | Fastest test took| 8s 214ms
+[INFO] | Slowest test took| 11s 632ms
+[INFO] ------------------------------------------------
+[INFO] 
+[INFO] SERENITY REPORTS
+[INFO]   - Full Report: file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/index.html
+[INFO]   - Single Page HTML Summary: file:///C:/Users/TechM/2026/JavaSerenityAPI/target/site/serenity/serenity-summary.html
+[INFO] 
+[INFO] --- failsafe:3.2.5:verify (default) @ serenity-api-tests ---
+[WARNING]  Parameter 'encoding' (user property 'encoding') is deprecated: since of 2.20.1
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:20 min
+[INFO] Finished at: 2026-04-12T02:30:54+01:00
+[INFO] ------------------------------------------------------------------------
