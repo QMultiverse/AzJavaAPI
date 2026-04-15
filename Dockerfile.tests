@@ -2,13 +2,14 @@ FROM maven:3.9-eclipse-temurin-17
 WORKDIR /app
 
 # Copy POM first for dependency caching
-COPY bddtrader-tests/pom.xml .
+COPY pom.xml .
 
 # Download dependencies (cached unless POM changes)
 RUN mvn dependency:go-offline -B
 
 # Copy full source
-COPY bddtrader-tests/ .
+COPY src ./src
+COPY serenity.properties ./
 
 # Run acceptance tests against DummyJSON
 ENTRYPOINT ["mvn", "verify"]
