@@ -8,8 +8,8 @@ trigger:
       - '**/*.md'
 
 variables:
-  - group: exp-config
-  - group: exp-secrets
+  - group: exp-config-api
+  - group: exp-secrets-api
 
 stages:
 
